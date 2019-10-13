@@ -2,9 +2,15 @@
 
 module Lattice (
     Lattice,
-    grow
+    grow,
+    accepted,
+    latticeExample
     )
     where
 
+import qualified Test.QuickCheck.Gen as Gen
+
 class Lattice l d where 
-    grow :: d -> (d -> Bool) -> l
+    grow :: d -> (d -> IO Bool) -> IO l
+    accepted :: l -> d -> Bool
+    latticeExample :: l -> Gen.Gen d
