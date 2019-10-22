@@ -1,0 +1,17 @@
+{
+    "$ref": "#/definitions/example",
+    "definitions": {
+        "example": {
+            "type": "object",
+            "properties": {
+                "h": {
+                    "type": "boolean"
+                },
+                "g": {
+                    "$ref": "#/definitions/example"
+                }
+            },
+            "required": ["h"]
+        }
+    }
+}

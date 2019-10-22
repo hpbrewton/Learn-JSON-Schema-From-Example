@@ -1,0 +1,42 @@
+name:                learnJSON  
+version:             0.1.0.0
+github:              "githubuser/tiling"
+license:             BSD3
+author:              "Author name here"
+maintainer:          "example@example.com"
+copyright:           "2019 Author name here"
+
+dependencies:
+- base >= 4.7 && < 5
+- containers >= 0.6.0.1
+- unordered-containers >= 0.2.10.0
+- QuickCheck >= 2.13.2
+- aeson >= 1.4.5.0
+- text >= 1.2.3.1
+- scientific >= 0.3.6.2
+- vector >= 0.12.0.3
+- bytestring >= 0.10.8.2
+- wai >= 3.2.2.1
+- http-types >= 0.12.3
+- warp >= 3.2.28
+- lens >= 4.17.1
+- wreq >= 0.5.3.2
+
+executables:
+  schemaGen:
+    main: FullGeneralizer.hs
+    source-dirs: src
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -main-is FullGeneralizer
+  server:
+    main: Server.hs 
+    source-dirs: src 
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -main-is Server
+

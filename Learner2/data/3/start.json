@@ -1,0 +1,10 @@
+{
+    "productId": 3,
+    "productName": "wabistics",
+    "price": 0.50,
+    "dimensions": {
+        "length": 1,
+        "width": 4,
+        "height": 9
+    }
+}

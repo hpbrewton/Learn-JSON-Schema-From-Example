@@ -1,0 +1,9 @@
+{
+    "post-office-box": "1",
+    "extended-address": "2",
+    "street-address": "3",
+    "locality": "4",
+    "region": "5",
+    "postal-code": "6",
+    "country-name": "7"
+}
