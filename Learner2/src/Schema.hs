@@ -49,7 +49,7 @@ instance Show Schema where
     show (TupleSchema vec) = printf "TupleSchema %s" (show vec)
     show (ObjectSchema object set) = printf "ObjectSchema %s %s" (show object) (show set) 
     show (RefSchema text) = printf "RefSchema %s" (show text) 
-    show (AnyOf schemae) = printf "AnyOf %s" (show schemae)
+    show (AnyOf schemas) = printf "AnyOf %s" (show schemas)
     show (DefinitionSchema top rest) = printf "Definitions %s %s" (show top) (show rest)
     show (SchemaWithOracle schema _) = printf "~%s" (show schema)
     show (Any) = printf "any"
@@ -145,17 +145,17 @@ member (ArraySchema schema lb ub) (Array vector) = allMembers && lbOk && ubOk
         ubOk = case ub of 
             Just v -> v >= Vec.length vector
             Nothing -> True 
-member (TupleSchema schemae) (Array vector) = sameSize && elemsMatch
+member (TupleSchema schemas) (Array vector) = sameSize && elemsMatch
     where 
-        sameSize = (Vec.length schemae) == (Vec.length vector)
-        elemsMatch = and $ Vec.zipWith member schemae vector
+        sameSize = (Vec.length schemas) == (Vec.length vector)
+        elemsMatch = and $ Vec.zipWith member schemas vector
 member (ObjectSchema object required) (Object m) = requiredKeysIn && childrenMatch
     where 
         requiredKeysIn = and $ HS.map (flip HM.member m) required
         childrenMatch = and $ HM.elems $ HM.intersectionWith member object m 
-member (AnyOf schemae) v = result
+member (AnyOf schemas) v = result
     where 
-        result = or $ fmap (flip member v) schemae
+        result = or $ fmap (flip member v) schemas
 member sch@(DefinitionSchema top rest) v = member (getFromDefinitionMap sch top) v
 member Any _ = True 
 member schema value = False
@@ -213,6 +213,6 @@ getFromDefinitionMap (DefinitionSchema _ m) = getWithDefinitionMap
                 continuer (TupleSchema vector) = TupleSchema $ Vec.map continuer vector
                 continuer (ObjectSchema object required) = ObjectSchema (HM.map continuer object) required
                 continuer (RefSchema ref) = getWithDefinitionMap ref 
-                continuer (AnyOf schemae) = AnyOf $ fmap continuer schemae 
+                continuer (AnyOf schemas) = AnyOf $ fmap continuer schemas 
 
                 continuer other = error $ show other

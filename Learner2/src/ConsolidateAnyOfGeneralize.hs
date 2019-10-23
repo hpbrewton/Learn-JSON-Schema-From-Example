@@ -28,8 +28,8 @@ consolidateAnyOfGeneralize :: Generalizer
 consolidateAnyOfGeneralize = generalizeBottomUp consolidateAnyOfGeneralizeNonRecursive
     where
         consolidateAnyOfGeneralizeNonRecursive :: Generalizer
-        consolidateAnyOfGeneralizeNonRecursive (AnyOf schemae) oracle = do 
-            let (numbers, nonNumbers) = L.partition (\s -> case s of (NumberSchema _ _) -> True; _ -> False) schemae
+        consolidateAnyOfGeneralizeNonRecursive (AnyOf schemas) oracle = do 
+            let (numbers, nonNumbers) = L.partition (\s -> case s of (NumberSchema _ _) -> True; _ -> False) schemas
             let allNumberSchema = foldr1 combineNumberSchema (numbers :: [Schema])
             return $ AnyOf (allNumberSchema:nonNumbers)
         consolidateAnyOfGeneralizeNonRecursive sch oracle = return sch 

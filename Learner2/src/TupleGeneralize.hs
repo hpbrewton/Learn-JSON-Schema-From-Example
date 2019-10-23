@@ -16,11 +16,11 @@ tupleGeneralize :: Generalizer
 tupleGeneralize = generalizeBottomUp $ nonRecursiveTupleGeneralize
     where
         nonRecursiveTupleGeneralize :: Generalizer
-        nonRecursiveTupleGeneralize sch@(TupleSchema schemae) oracle = do 
+        nonRecursiveTupleGeneralize sch@(TupleSchema schemas) oracle = do 
             (Array example) <- Gen.generate $ arbitraryFromSchema sch
             shuffle <- Gen.generate $ Gen.shuffle $ Vec.toList example
             b <- oracle $ Array $ Vec.fromList shuffle
             if b
-                then return $ ArraySchema (AnyOf (Vec.toList schemae)) (Vec.length schemae) (Just $ Vec.length schemae)
-                else return $ (TupleSchema schemae)
+                then return $ ArraySchema (AnyOf (Vec.toList schemas)) (Vec.length schemas) (Just $ Vec.length schemas)
+                else return $ (TupleSchema schemas)
         nonRecursiveTupleGeneralize sch oracle = return sch

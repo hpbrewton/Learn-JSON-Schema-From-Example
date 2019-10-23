@@ -31,18 +31,18 @@ generalizeBottomUp generalizer = \schema oracle ->
         ArraySchema sch lb mub -> do 
             sch' <- (generalizeBottomUp generalizer) sch oracle 
             generalizer (ArraySchema sch' lb mub) oracle
-        TupleSchema schemae -> do 
-            (Array vector) <- Gen.generate $ arbitraryFromSchema (TupleSchema schemae)
+        TupleSchema schemas -> do 
+            (Array vector) <- Gen.generate $ arbitraryFromSchema (TupleSchema schemas)
             let oracles = Vec.map (\slotter value -> oracle $ Array $ slotter $ value) $ Util.slotterVec vector 
-            childGeneralized <- fmap TupleSchema $ sequence $ Vec.zipWith (generalizeBottomUp generalizer) schemae oracles
+            childGeneralized <- fmap TupleSchema $ sequence $ Vec.zipWith (generalizeBottomUp generalizer) schemas oracles
             generalizer childGeneralized oracle
         ObjectSchema object required -> do 
             arbObject <- sequence $ HM.map (Gen.generate . arbitraryFromSchema) object
             genObject <- sequence $ HM.mapWithKey (\k v -> (generalizeBottomUp generalizer) v (oracle . Object . (flip (HM.insert k) arbObject))) object  
             generalizer (ObjectSchema genObject required) oracle
         RefSchema ref -> generalizer (RefSchema ref) oracle
-        AnyOf schemae -> do 
-            childGeneralized <- sequence $ map (flip (generalizeBottomUp generalizer) oracle) schemae
+        AnyOf schemas -> do 
+            childGeneralized <- sequence $ map (flip (generalizeBottomUp generalizer) oracle) schemas
             generalizer (AnyOf childGeneralized) oracle
         SchemaWithOracle schema oracle' -> do 
             -- putStrLn $ "okay we're with dealing schema oracles"

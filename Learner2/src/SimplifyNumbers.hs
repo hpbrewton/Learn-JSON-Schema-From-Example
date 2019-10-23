@@ -14,17 +14,17 @@ import qualified Data.Vector as Vec
 import Generalizer
 
 simplifyNumbers :: Schema -> Schema
-simplifyNumbers (DefinitionSchema top schemae) = DefinitionSchema top $ HM.union updatedNumSchemae schemae
+simplifyNumbers (DefinitionSchema top schemas) = DefinitionSchema top $ HM.union updatedNumSchemae schemas
     where 
         isNumberSchema (NumberSchema _ _) = True 
         isNumberSchema _ = False 
         
-        (numSchemae, otherSchemae) = gPartition isNumberSchema $ HM.map (\(SchemaWithOracle schema _) -> schema) schemae
+        (numSchemae, otherSchemae) = gPartition isNumberSchema $ HM.map (\(SchemaWithOracle schema _) -> schema) schemas
 
         justNumSchemaData = HM.map (\(NumberSchema a b) -> (a, b)) numSchemae
         refs = HM.foldrWithKey (\k v m -> HM.insert v k m) HM.empty justNumSchemaData
 
-        getOracle = (\(SchemaWithOracle _ oracle) -> oracle) . (schemae HM.!)
+        getOracle = (\(SchemaWithOracle _ oracle) -> oracle) . (schemas HM.!)
         
         replaceWithSchema label (NumberSchema a b) = if (refs HM.! (a, b)) == label
             then (SchemaWithOracle (NumberSchema a b) (getOracle label))

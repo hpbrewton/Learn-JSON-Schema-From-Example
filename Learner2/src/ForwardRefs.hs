@@ -21,8 +21,8 @@ finalRef m maybeFinal@(RefSchema ref) = case m HM.! ref of
     next@(SchemaWithOracle (RefSchema ref) oracle) -> finalRef m next
     next@(RefSchema ref) -> finalRef m next
     _ -> maybeFinal
-finalRef m (TupleSchema schemae) = TupleSchema $ fmap (finalRef m) schemae
-finalRef m (ObjectSchema schemae required) = ObjectSchema (fmap (finalRef m) schemae) required
+finalRef m (TupleSchema schemas) = TupleSchema $ fmap (finalRef m) schemas
+finalRef m (ObjectSchema schemas required) = ObjectSchema (fmap (finalRef m) schemas) required
 finalRef m ob = ob
 
 forwardRefMaps :: HM.HashMap T.Text Schema -> HM.HashMap T.Text Schema
@@ -34,8 +34,8 @@ forwardRefs (DefinitionSchema top m) = DefinitionSchema top $ forwardRefMaps m
 requiredReferences :: Schema -> HS.HashSet T.Text
 requiredReferences (DefinitionSchema top m) = HS.insert top $ HM.foldr (HS.union) HS.empty $ fmap requiredReferences m
 requiredReferences (SchemaWithOracle schema _) = requiredReferences schema
-requiredReferences (TupleSchema schemae) = Vec.foldr (HS.union) HS.empty $ fmap requiredReferences schemae
-requiredReferences (ObjectSchema schemae _) = HM.foldr (HS.union) HS.empty $ fmap requiredReferences schemae
+requiredReferences (TupleSchema schemas) = Vec.foldr (HS.union) HS.empty $ fmap requiredReferences schemas
+requiredReferences (ObjectSchema schemas _) = HM.foldr (HS.union) HS.empty $ fmap requiredReferences schemas
 requiredReferences (RefSchema ref) = HS.singleton ref
 requiredReferences _ = HS.empty
 
