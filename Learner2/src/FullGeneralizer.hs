@@ -24,10 +24,11 @@ import Control.Monad
 import qualified Data.Vector as Vec
 import Text.Printf
 
-import Debug.Trace
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.ByteString.Lazy as LazyBS
 import Data.Ratio
+
+import Debug.Trace
 
 import Network.Wreq
 import Control.Lens
@@ -72,7 +73,7 @@ precision n schema = do
 recall :: Int -> Schema -> IO Double
 recall n schema = do 
     theirExamples <- sequence $ take n $ repeat example
-    let acceptedExamples = Prelude.filter (Schema.member schema) (traceShow theirExamples theirExamples)
+    let acceptedExamples = Prelude.filter (Schema.member schema) theirExamples
     let r = ((fromIntegral $ length acceptedExamples) / (fromIntegral $ length (theirExamples)))
     return r
 
@@ -82,8 +83,9 @@ main = do
     let startSchema = schemaFromValue startValue 
     schema' <- fullGeneralize startSchema oracle
     let simplified = simplifyReferences $ forwardRefs $ simplifyNumbers schema'
-    checkedSameObject <- sameObjectGeneralize simplified
-    let learnedSchema = getFromDefinitionMap checkedSameObject ".Object"
-    p <- precision 10 learnedSchema
-    r <- recall 10 learnedSchema
-    putStrLn $ printf "%f\t%f" p r
+    -- checkedSameObject <- sameObjectGeneralize simplified
+    (AnyOf reduced) <- replaceWithBisimulations simplified
+    let learnedSchema = AnyOf $ fmap (\defs@(DefinitionSchema top schemas) -> (getFromDefinitionMap defs top)) (traceShow reduced reduced)
+    -- p <- precision 10 learnedSchema
+    r <- recall    10 learnedSchema
+    putStrLn $ printf "%f\t%f" (1.0 :: Double) r

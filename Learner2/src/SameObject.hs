@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 module SameObject (
-    sameObjectGeneralize
+    replaceWithBisimulations
 ) where
 
 import Schema
@@ -15,24 +15,55 @@ import qualified Data.Vector as Vec
 import Generalizer
 import Control.Monad
 
-isObjectOrNull :: Schema -> Bool
-isObjectOrNull (SchemaWithOracle (ObjectSchema object required) oracle) = True 
-isObjectOrNull (SchemaWithOracle NullSchema oracle) = True
-isObjectOrNull _ = False
+import Debug.Trace
+
+lessThanOrEqual :: Schema -> T.Text -> T.Text -> IO Bool
+lessThanOrEqual defSchema@(DefinitionSchema _ schemaMap) left right = do 
+    examples <- Gen.generate $ Gen.vectorOf 10 $ arbitraryFromSchema $ getFromDefinitionMap defSchema left 
+    let (SchemaWithOracle _ oracle) = (schemaMap HM.! right)
+    fmap and $ sequence $ fmap oracle examples
+
+createSubSchemaGraph :: Schema -> IO (T.Text -> T.Text -> Bool)
+createSubSchemaGraph defSchema@(DefinitionSchema _ schemas) = do 
+    let schemaMapList = HM.keys schemas
+    let pairs = [(a,b) | a <- schemaMapList, b <- schemaMapList]
+    pairsSet <- fmap HS.fromList $ filterM (\(a, b) -> lessThanOrEqual defSchema a b) pairs
+    return $ \left right -> ((left, right) `HS.member` pairsSet )
 
 
-sameObjectGeneralize :: Schema -> IO Schema
-sameObjectGeneralize defs@(DefinitionSchema top schemas) = do 
-    let labelMaps = foldr (\l -> HM.insert l HS.empty) HM.empty $ map fst allLabels
-    equalPairs <- equalPairsIO 
-    let anyOfs = HM.map (AnyOf . (map RefSchema) . HS.toList ) $ foldr (\(l1, l2) m -> HM.adjust (HS.insert l1) l2 m) labelMaps  equalPairs
-    return $ DefinitionSchema top $ HM.unionWith (\(AnyOf items) (SchemaWithOracle current oracle) -> (SchemaWithOracle (AnyOf (current:items)) oracle)) anyOfs schemas
+bisimulate :: (Foldable f, Eq (f T.Text)) => (T.Text -> T.Text -> Bool) -> f T.Text -> T.Text -> T.Text -> Bool 
+bisimulate r exh a b = (preEdgesA == preEdgesB) && (postEdgesA == postEdgesB)
     where 
-        sim :: Int -> ((T.Text, Schema), (T.Text, Schema)) -> IO Bool 
-        sim n ((l1, (SchemaWithOracle _ o1)), (l2, SchemaWithOracle _ o2)) = do 
-            let arb1 = arbitraryFromSchema $ getFromDefinitionMap defs l1 
-            fmap and $ join $ fmap sequence $ fmap (map o2) $ Gen.generate $ Gen.resize n $ Gen.listOf1 arb1
-        allLabels = HM.toList $ HM.filter isObjectOrNull schemas
-        pairsOfKVOs = uniquePairs allLabels
-        equalPairsIO :: IO [(T.Text, T.Text)]
-        equalPairsIO = fmap (filter (\(a, b) ->  a/=b)) $ fmap (fmap (\(a, b) -> (fst a, fst b))) $ filterM (sim 10) pairsOfKVOs
+        toFilteredList :: (Foldable g) => (a -> Bool) -> g a -> [a]
+        toFilteredList p = foldr (\a b -> if p a 
+            then a:b 
+            else b) []
+        preEdgesA = toFilteredList (flip r a) exh
+        preEdgesB = toFilteredList (flip r b) exh 
+        postEdgesA = toFilteredList (r a) exh 
+        postEdgesB = toFilteredList (r b) exh 
+
+bisimulateSet :: Schema -> IO (HS.HashSet (T.Text, T.Text))
+bisimulateSet defSchema@(DefinitionSchema _ schemas) = do 
+    relation <- createSubSchemaGraph defSchema 
+    let operation = bisimulate relation (HM.keys schemas)
+    let allKeys = HM.keys schemas
+    return $ HS.fromList [(a, b) | a <- allKeys, b <- allKeys, bisimulate relation allKeys a b]
+
+replaceWithBisimulations :: Schema -> IO Schema
+replaceWithBisimulations defSchema@(DefinitionSchema top schemas) = do 
+    pairsSet <- bisimulateSet defSchema
+    let classes = equivalenceClass (\a b -> HS.member (a, b) pairsSet) $ HM.keys schemas
+    let updater = updateReference classes
+    -- return (updater requiredTop, refUpdater updater defSchema)
+    let (DefinitionSchema _ newSchemas) = refUpdater updater defSchema
+    return $ AnyOf $ fmap (flip DefinitionSchema newSchemas) $ updater top
+    where 
+        reps :: [[T.Text]] -> HM.HashMap T.Text [T.Text]
+        reps cs = HM.fromList $ concat [[(c, traceShow (keepers clss) $ keepers clss) | c <- clss] | clss <- (traceShow cs cs)] 
+        updateReference :: [[T.Text]] -> T.Text -> [T.Text]
+        updateReference cs = ((reps cs) HM.!)
+        keepers :: [T.Text] -> [T.Text]
+        keepers xs = (head xs) : others
+            where 
+                others = filter (\r -> case (schemas HM.! r) of (SchemaWithOracle NullSchema _) -> True ; _ -> False) xs 

@@ -1,0 +1,27 @@
+{
+    "$ref": "#/definitions/other",
+    "definitions": {
+        "other": {
+            "type": "object",
+            "properties": {
+                "v": {"$ref": "#/definitions/example"}
+            },
+            "required": ["v"]
+        },
+        "example": {
+            "anyOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "h": {
+                            "type": "boolean"
+                        },
+                        "g": {"$ref": "#/definitions/example"}
+                    },
+                    "required": ["h", "g"]
+                },
+                null
+            ]
+        }
+    }
+}

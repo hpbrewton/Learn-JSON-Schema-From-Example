@@ -4,7 +4,8 @@ module Util (
     filterIOHSet,
     mapTextKeys,
     gPartition,
-    uniquePairs
+    uniquePairs,
+    equivalenceClass
     )
     where 
 
@@ -44,3 +45,12 @@ gPartition f = HM.foldrWithKey (\k v (l, r) -> if f v
 
 uniquePairs :: [a] -> [(a, a)]
 uniquePairs xs = [(a, b) | a <- xs, b <- xs]
+
+equivalenceClass :: (Foldable f) => (a -> a -> Bool) -> f a -> [[a]]
+equivalenceClass r = foldr insertOrNew []
+    where 
+        -- insertOrNew :: forall a. [[a]] -> a -> [[a]]
+        insertOrNew y [] = [[y]]
+        insertOrNew y (x:xs) = if all (\z -> r z y && r y z) x 
+            then ((y:x):xs)
+            else x: insertOrNew y xs

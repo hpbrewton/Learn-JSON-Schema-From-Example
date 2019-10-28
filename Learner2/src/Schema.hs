@@ -7,7 +7,8 @@ module Schema (
     getFromDefinitionMap,
     member,
     schemaFromDefinition,
-    rootLevel
+    rootLevel,
+    refUpdater
     ) where 
 
 import qualified Data.HashMap.Strict as HM 
@@ -198,6 +199,7 @@ arbitraryFromSchema (RefSchema text) = error "can not generate an arbitrary memb
 arbitraryFromSchema (AnyOf schemas) = Gen.oneof $ fmap arbitraryFromSchema schemas
 arbitraryFromSchema (SchemaWithOracle schema _) = arbitraryFromSchema schema
 arbitraryFromSchema Any = arbitraryFromSchema NullSchema
+arbitraryFromSchema other = error $ show other
 
 getFromDefinitionMap :: Schema -> Text -> Schema
 getFromDefinitionMap (DefinitionSchema _ m) = getWithDefinitionMap
@@ -216,3 +218,13 @@ getFromDefinitionMap (DefinitionSchema _ m) = getWithDefinitionMap
                 continuer (AnyOf schemas) = AnyOf $ fmap continuer schemas 
 
                 continuer other = error $ show other
+
+refUpdater :: (Text -> [Text]) -> Schema -> Schema
+refUpdater updater (ArraySchema schema lb ub) = ArraySchema (refUpdater updater schema) lb ub 
+refUpdater updater (TupleSchema schemas) = TupleSchema $ fmap (refUpdater updater) schemas
+refUpdater updater (ObjectSchema schemas req) = ObjectSchema (fmap (refUpdater updater) schemas) req 
+refUpdater updater (RefSchema ref) = AnyOf $ fmap RefSchema $ updater ref 
+refUpdater updater (AnyOf schemas) = AnyOf $ fmap (refUpdater updater) schemas 
+refUpdater updater (DefinitionSchema top defs) = DefinitionSchema top $ HM.filterWithKey (\k _ -> (k `elem` updater k)) $ fmap (refUpdater updater) defs 
+refUpdater updater (SchemaWithOracle schema oracle) = SchemaWithOracle (refUpdater updater schema) oracle
+refUpdater _ other = other 

@@ -25,5 +25,5 @@ except OSError:
     pass
 learnerFile = open("learner.txt", "a")
 gladeFile = open("glade.txt", "a")
-for i in range(1, 8):
+for i in range(9, 10):
     run_test(i, learnerFile, gladeFile)
