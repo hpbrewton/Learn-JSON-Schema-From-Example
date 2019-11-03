@@ -5,7 +5,15 @@ module Util (
     mapTextKeys,
     gPartition,
     uniquePairs,
-    equivalenceClass
+    equivalenceClass,
+    rotations,
+    range,
+    averge,
+    epsilon,
+    upperBound,
+    lowerBound,
+    swap,
+    showT
     )
     where 
 
@@ -13,6 +21,12 @@ import qualified Data.Vector as Vec
 import qualified Data.HashSet as HS
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
+import qualified Test.QuickCheck as Gen 
+import Data.Scientific
+
+geometricVector :: Int -> Int -> Gen a -> Gen [a]
+geometricVector lb ub v = do 
+    
 
 orElse :: Maybe a -> a -> a
 orElse (Just a) _ = a 
@@ -54,3 +68,55 @@ equivalenceClass r = foldr insertOrNew []
         insertOrNew y (x:xs) = if all (\z -> r z y && r y z) x 
             then ((y:x):xs)
             else x: insertOrNew y xs
+
+rotations :: Vec.Vector a -> [Vec.Vector a]
+rotations vector = [(Vec.slice n (length-n) vector) Vec.++ (Vec.slice 0 n vector) | n <- [0..(length-1)]]
+    where 
+        length = Vec.length vector
+
+class (Num a, Ord a) => Ranger a where 
+    averge :: a -> a -> a 
+    epsilon :: a 
+    upperBound :: a 
+    lowerBound :: a 
+
+
+instance Ranger Scientific where 
+    averge a b = (a+b)/2
+    epsilon = 0.005
+    upperBound = 9001
+    lowerBound = -9001
+
+instance Ranger Int where 
+    averge a b = (a+b) `quot` 2 
+    epsilon = 1
+    upperBound = 10 
+    lowerBound = 0
+
+range :: (Ranger a) => (a, a) -> (a, a) -> (a -> IO Bool) -> IO (a, a)
+range (lb, rb) (ls, rs) o
+    | (ls - lb) <= epsilon && (rb - rs) <= epsilon = return (ls, rs)
+    | otherwise = do 
+        let lm = lb `averge` ls
+        let rm = rb `averge` rs
+        keepLb <- o lm 
+        keepUb <- o rm 
+        if ((lm == lb) || (lm == ls)) && ((rm == rb) || (rm == rs))
+            then case (keepLb, keepUb) of 
+                (True, True) -> return (lb, rb)
+                (True, False) -> return (lb, rs)
+                (False, True) -> return (ls, rb)
+                (False, False) -> return (ls, rs)
+            else case (keepLb, keepUb) of 
+                (True, True) -> range (lb, rb) (lm, rm) o
+                (True, False) -> range (lb, rm) (lm, rs) o
+                (False, True) -> range (lm, rb) (ls, rm) o
+                (False, False) -> range (lm, rm) (ls, rs) o
+
+swap :: (a, b) -> (b, a)
+swap (a, b) = (b, a)
+
+
+
+showT :: (Show a) => a -> T.Text 
+showT = T.pack . show 

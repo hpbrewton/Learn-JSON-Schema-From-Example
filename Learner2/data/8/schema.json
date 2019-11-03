@@ -9,6 +9,7 @@
                 },
                 "g": {
                     "type": "array",
+                    "maximum": 7,
                     "items": {
                         "$ref": "#/definitions/example"
                     }

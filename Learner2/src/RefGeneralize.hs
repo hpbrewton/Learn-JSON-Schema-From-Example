@@ -24,7 +24,9 @@ pushRef prefix (DefinitionSchema top submap) = DefinitionSchema (prefix <> top) 
 pushRef prefix (RefSchema ref) = RefSchema (prefix <> ref)
 pushRef prefix (TupleSchema vec) = TupleSchema $ fmap (pushRef prefix) vec 
 pushRef prefix (ObjectSchema object required) = ObjectSchema (fmap (pushRef prefix) object) required
+pushRef prefix (ArraySchema schema lb ub) = ArraySchema (pushRef prefix schema) lb ub
 pushRef prefix (SchemaWithOracle schema oracle) = SchemaWithOracle (pushRef prefix schema) oracle
+pushRef prefix (AnyOf schemas) = AnyOf $ fmap (pushRef prefix) schemas
 pushRef prefix other = other 
 
 -- always returns a DefinitionSchema, 
@@ -51,3 +53,12 @@ refer (ObjectSchema object required) _ = return $ DefinitionSchema o $ HM.insert
         updatedSchemae = HM.mapWithKey (\k v -> pushRef (o <> sep <> k) v) object
         (refs, unionOfMaps) =
             HM.foldrWithKey (\k (DefinitionSchema top submap) (rs, ms) -> (HM.insert k (RefSchema top) rs, HM.union submap ms)) (HM.empty, HM.empty) updatedSchemae
+refer (AnyOf schemas) _ = return $ DefinitionSchema t $ HM.insert t (AnyOf $ map RefSchema schemNames) unionOfMaps
+    where 
+        t = sep <> "AnyOf"
+        updatedSchemas = map (\(k, s) -> pushRef (t <> sep <> (Text.pack $ show k)) s) $ zip [1..] schemas
+        (schemNames, unionOfMaps) = foldr (\(DefinitionSchema t m') (l, m) -> (t : l, HM.union m' m)) ([], HM.empty) updatedSchemas
+refer (ArraySchema schema lb ub) _ = return $ DefinitionSchema t $ HM.insert t (ArraySchema (RefSchema ref) lb ub) childMap 
+    where 
+        t = sep <> "Array"
+        (DefinitionSchema ref childMap) = pushRef t schema

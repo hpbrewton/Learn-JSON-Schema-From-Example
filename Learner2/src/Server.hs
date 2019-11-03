@@ -38,7 +38,7 @@ schema n = do
         Nothing -> error ""
 
 example :: Schema -> IO Value 
-example schema = Gen.generate  $ arbitraryFromSchema schema
+example schema = Gen.generate $ Gen.resize 10 $ arbitraryFromSchema schema
 
 main :: IO ()
 main = do
@@ -54,6 +54,7 @@ main = do
                 ["example"] -> example schemaV
                 ["member"] -> do 
                     body <- lazyRequestBody request
+                    putStrLn $ show body
                     case decode body of 
                         Just json -> do 
                             return $ Bool $ member schemaV json 

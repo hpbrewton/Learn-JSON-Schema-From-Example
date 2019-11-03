@@ -18,6 +18,7 @@ import Data.Text
 import qualified Data.Vector as Vec
 import Data.Scientific
 import Test.QuickCheck as Gen
+import Test.QuickCheck.Arbitrary
 import Util
 import Text.Printf
 import Data.Maybe
@@ -62,7 +63,7 @@ schemaFromValue Null = NullSchema
 schemaFromValue (Bool _) = BooleanSchema
 schemaFromValue (String _) = StringSchema
 schemaFromValue (Number n) = NumberSchema (Just n) (Just n)
-schemaFromValue (Object obj) = ObjectSchema (HM.map schemaFromValue obj) HS.empty
+schemaFromValue (Object obj) = ObjectSchema (HM.map schemaFromValue obj) (HS.fromList $ HM.keys obj)
 schemaFromValue (Array vec) = TupleSchema $ Vec.map schemaFromValue vec
 
 {-
@@ -95,8 +96,8 @@ schemaFromDefinition (Object obj) = case HM.lookup "type" obj of
     Just "boolean" -> BooleanSchema
     Just "number" ->  NumberSchema (fmap toNumber (HM.lookup "minimum" obj)) (fmap toNumber (HM.lookup "maximum" obj))
     Just "array" -> case HM.lookup "items" obj of 
-        (Just v) -> ArraySchema (schemaFromDefinition v) (fromJust $ toInt (HM.lookupDefault (Number 0) "minlen" obj)) (join $ fmap toInt (HM.lookup "maxlen" obj)) 
-        Nothing -> ArraySchema Any (fromJust $ toInt (HM.lookupDefault (Number 0) "minlen" obj)) (join $ fmap toInt (HM.lookup "maxlen" obj))  
+        (Just v) -> ArraySchema (schemaFromDefinition v) (fromJust $ toInt (HM.lookupDefault (Number 0) "minlen" obj)) (join $ fmap toInt (HM.lookup "maximum" obj)) 
+        Nothing -> ArraySchema Any (fromJust $ toInt (HM.lookupDefault (Number 0) "minlen" obj)) (join $ fmap toInt (HM.lookup "minimum" obj))  
     Just "object" -> case (HM.lookup "properties" obj, HM.lookup "required" obj) of 
         (Nothing, Nothing) -> ObjectSchema HM.empty HS.empty
         (Just (Object properties), Nothing) -> ObjectSchema (HM.map schemaFromDefinition properties) HS.empty 
@@ -135,7 +136,7 @@ member :: Schema -> Value -> Bool
 member StringSchema (String _) = True 
 member BooleanSchema (Bool _) = True
 member NullSchema Null = True 
-member (NumberSchema lb ub) (Number num) = True -- lbOk && ubOk
+member (NumberSchema lb ub) (Number num) = lbOk && ubOk
     where 
         lbOk = case lb of (Just v) -> num >= v ; _ -> True  
         ubOk = case ub of (Just v) -> num <= v ; _ -> True 
@@ -168,27 +169,25 @@ arbitraryFromSchema (BooleanSchema) = do
     return $ Bool bool 
 arbitraryFromSchema (NullSchema) = return Null 
 arbitraryFromSchema (NumberSchema lb ub) = do 
-    let jlb = Util.orElse lb (-10000)
+    let jlb = Util.orElse lb (-1000)
     let jub = Util.orElse ub (1000)
     fmap Number $ genScientificInRange jlb jub
     where 
         genScientificInRange :: Scientific -> Scientific -> Gen.Gen Scientific
-        genScientificInRange a b = do 
-            let m = (b+a)/2
-            case ((toBoundedRealFloat (b-a)) :: Either Double Double) of 
-                Left _ -> Gen.oneof [genScientificInRange a m, genScientificInRange m b]
-                {-
-                There's a little magic here. 
-                As we limit the convervision from the rational to a scientific by a number of digits 
-                it will necessarilly be in [0, b-a], thus the generated number will be in [a, b].
-                -}
-                Right v -> do 
-                    diff <- Gen.choose (0, v)
-                    return (a + fromFloatDigits diff)
+        genScientificInRange a b 
+            | (b-a) < epsilon = return $ averge a b 
+            | otherwise = do 
+                let m = averge a b 
+                low <- arbitrary
+                if low
+                    then genScientificInRange a m 
+                    else genScientificInRange m b
 arbitraryFromSchema (ArraySchema schema jlb ub) = do 
-    let jub = Util.orElse ub 2
-    size <- Gen.choose (jlb, jub)
-    fmap Array $ fmap Vec.fromList $ Gen.vectorOf size $ arbitraryFromSchema schema
+    let jub = Util.orElse ub 10
+    n <- choose (jlb, jub)
+    fmap Array $ fmap Vec.fromList $ sized (\size -> Gen.vectorOf (max jlb (min n size)) $ scale scaler $ arbitraryFromSchema schema)
+    where 
+        scaler = (`quot` 2)
 arbitraryFromSchema (TupleSchema schema) = fmap Array $ sequence $ fmap arbitraryFromSchema schema
 arbitraryFromSchema (ObjectSchema object required) = do 
     let optional = (HM.keysSet object) `HS.difference` required

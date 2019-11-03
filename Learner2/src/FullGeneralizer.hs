@@ -32,6 +32,7 @@ import Debug.Trace
 
 import Network.Wreq
 import Control.Lens
+import Data.Time
 
 fullGeneralize :: Generalizer 
 fullGeneralize = foldr1 (flip combine) $ Prelude.map generalizeBottomUp [
@@ -79,13 +80,16 @@ recall n schema = do
 
 main :: IO ()
 main = do 
+    start <- getCurrentTime
     startValue <- getStart
     let startSchema = schemaFromValue startValue 
     schema' <- fullGeneralize startSchema oracle
-    let simplified = simplifyReferences $ forwardRefs $ simplifyNumbers schema'
+    let simplified = simplifyReferences $ forwardRefs $ simplifyNumbers $ schema'
     -- checkedSameObject <- sameObjectGeneralize simplified
-    (AnyOf reduced) <- replaceWithBisimulations simplified
+    (AnyOf reduced) <- replaceWithBisimulations (traceShow schema' schema')
     let learnedSchema = AnyOf $ fmap (\defs@(DefinitionSchema top schemas) -> (getFromDefinitionMap defs top)) (traceShow reduced reduced)
     -- p <- precision 10 learnedSchema
     r <- recall    10 learnedSchema
-    putStrLn $ printf "%f\t%f" (1.0 :: Double) r
+    end <- getCurrentTime
+    let time = diffUTCTime end start 
+    putStrLn $ printf "%f\t%f\t%s" (1.0 :: Double) r (show time)

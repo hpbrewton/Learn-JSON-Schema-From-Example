@@ -10,8 +10,8 @@ def run_test(n, learnerFile, gladeFile):
     learner = subprocess.Popen(["/usr/local/bin/stack", "run", "schemaGen"], 
         stdout=learnerFile,
         cwd="/Users/hb/latlib/Learner2")
-    glade = subprocess.Popen(["/usr/bin/java", "-classpath", "test:glade.jar", "main.Test"], stdout=gladeFile, cwd="/Users/hb/latlib/glade-full")
     learner.wait()
+    glade = subprocess.Popen(["/usr/bin/java", "-classpath", "test:glade.jar", "main.Test"], stdout=gladeFile, cwd="/Users/hb/latlib/glade-full")
     glade.wait()
     server.kill()
 
@@ -25,5 +25,5 @@ except OSError:
     pass
 learnerFile = open("learner.txt", "a")
 gladeFile = open("glade.txt", "a")
-for i in range(9, 10):
+for i in range(1, 10):
     run_test(i, learnerFile, gladeFile)
