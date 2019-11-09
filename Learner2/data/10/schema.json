@@ -1,0 +1,35 @@
+{
+    "$ref": "#/definitions/fsobj",
+    "definitions": {
+        "file": {
+            "type": "object",
+            "properties": {
+                "filename": {
+                    "type": "string"
+                }
+            },
+            "required": ["filename"]
+        },
+        "directory": {
+            "type": "object",
+            "properties": {
+                "dirname": {
+                    "type": "string"
+                },
+                "files": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/fsobj"
+                    }
+                }
+            },
+            "required": ["dirname", "files"]
+        },
+        "fsobj": {
+            "anyOf": [
+                {"$ref": "#/definitions/file"},
+                {"$ref": "#/definitions/directory"}
+            ]
+        }
+    }
+}

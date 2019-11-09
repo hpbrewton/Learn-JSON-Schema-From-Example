@@ -13,7 +13,8 @@ module Util (
     upperBound,
     lowerBound,
     swap,
-    showT
+    showT,
+    evens
     )
     where 
 
@@ -21,12 +22,9 @@ import qualified Data.Vector as Vec
 import qualified Data.HashSet as HS
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
-import qualified Test.QuickCheck as Gen 
 import Data.Scientific
 
-geometricVector :: Int -> Int -> Gen a -> Gen [a]
-geometricVector lb ub v = do 
-    
+
 
 orElse :: Maybe a -> a -> a
 orElse (Just a) _ = a 
@@ -120,3 +118,6 @@ swap (a, b) = (b, a)
 
 showT :: (Show a) => a -> T.Text 
 showT = T.pack . show 
+
+evens :: [a] -> [a]
+evens = map snd . filter ((==1) . fst) . zip (cycle [1, 2])

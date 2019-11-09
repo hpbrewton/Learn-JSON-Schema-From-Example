@@ -24,12 +24,13 @@ import Text.Printf
 import Data.Maybe
 import Control.Monad
 
-import Debug.Trace
+-- import Debug.Trace
 
 type Oracle = Value -> IO Bool
 type Definitions = HM.HashMap Text Schema
 
 data Schema = StringSchema -- to be replace with regular expresion
+    | SingStringSchema String 
     | BooleanSchema -- a stub 
     | NullSchema -- a stub
     | NumberSchema (Maybe Scientific) (Maybe Scientific) -- min max 

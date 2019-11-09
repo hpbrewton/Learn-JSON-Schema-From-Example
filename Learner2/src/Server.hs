@@ -54,7 +54,6 @@ main = do
                 ["example"] -> example schemaV
                 ["member"] -> do 
                     body <- lazyRequestBody request
-                    putStrLn $ show body
                     case decode body of 
                         Just json -> do 
                             return $ Bool $ member schemaV json 

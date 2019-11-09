@@ -1,0 +1,84 @@
+/Users/hb/latlib/Learner2/src/SameObject.hs:
+  hash: ad048ca3ed513f90ab2b4147c16884a0a679d2b72a9328a98595df4b8987873b
+  size: 3095
+  modtime: 1572233457
+/Users/hb/latlib/Learner2/src/Recursive.hs:
+  hash: 44268c41c5ac3cdf723f2bb668df5b5e1938ccd7fc321dfdf855f6144af9221b
+  size: 3895
+  modtime: 1572810906
+/Users/hb/latlib/Learner2/src/SimplifyNumbers.hs:
+  hash: ed30ee5a59ddabc107f77d34fd45f5beb03fa18872f2e00cd64aca5f249d5638
+  size: 1231
+  modtime: 1571719458
+/Users/hb/latlib/Learner2/src/IndependentLearner.hs:
+  hash: ed60d3d2c66252427c2721a2258bfbf06c63911365cf51bf6f1ff18dde2f0bff
+  size: 2522
+  modtime: 1572747715
+/Users/hb/latlib/Learner2/src/Server.hs:
+  hash: 97a636de728959678b96816ca92a6f8900a5e1d1b4f566c80f15b3194d22755a
+  size: 2005
+  modtime: 1572832475
+/Users/hb/latlib/Learner2/src/MainDriver.hs:
+  hash: 6e88b23cc00a81c125e8737f6f246506124db79abc02798de24df4d4e0176e47
+  size: 2901
+  modtime: 1573238891
+/Users/hb/latlib/Learner2/src/Flatten.hs:
+  hash: 72822bb381c9141f3b2c08481303fba9d0eed688dd503f441e9ddf14dd8d9f36
+  size: 2250
+  modtime: 1572763433
+/Users/hb/latlib/Learner2/src/TupleGeneralize.hs:
+  hash: 1f0fb14b666049a06d87f2690484063fa89ad9952c195dc1407b8e9243c02510
+  size: 977
+  modtime: 1571719458
+/Users/hb/latlib/Learner2/src/ScalarGeneralize.hs:
+  hash: dbedcdf28a3e2f93cc832c6f3dc9c4885f45a914056877263ec6f55da149718f
+  size: 2377
+  modtime: 1572716654
+/Users/hb/latlib/Learner2/src/RemoveAnyOfGeneralize.hs:
+  hash: fa315b7ef9e7ad6c1381292d2c8b269e81c1bc030b44d6feb26c591589d83bca
+  size: 561
+  modtime: 1571719458
+/Users/hb/latlib/Learner2/src/RefGeneralize.hs:
+  hash: 759c594a3bcbe3fac67186853fd1cba14481ed99334a4f1a2aa451b685d6088d
+  size: 3519
+  modtime: 1572672186
+/Users/hb/latlib/Learner2/src/FullGeneralizer.hs:
+  hash: f0ccb09fbfb3a4e573a0351e6f721b76d99becc0f44dac97d9e1c326419d30bd
+  size: 2976
+  modtime: 1572672337
+/Users/hb/latlib/Learner2/src/Util.hs:
+  hash: 66df5f335e0276979307be229b63fae9fe252e5ef75a97a2fb455dcf84dcd9ea
+  size: 3609
+  modtime: 1573236623
+/Users/hb/latlib/Learner2/src/AutLearn.hs:
+  hash: a663308626392f464fd50158ac6d9844db82d9c2a17711c01eed800880e57aac
+  size: 885
+  modtime: 1573279993
+/Users/hb/latlib/Learner2/learnJSON.cabal:
+  hash: 32c8b12c62fbbf73e1b93fb1bff58a7814e25ed7d2d3a84c09ffe4cff58e6bb4
+  size: 4448
+  modtime: 1573279688
+/Users/hb/latlib/Learner2/src/Generalizer.hs:
+  hash: 6ae54901694a08c0367d146c920f705e2bd8fa58907b34e7aca32db85df36f5f
+  size: 2381
+  modtime: 1571719458
+/Users/hb/latlib/Learner2/src/OracleWrapperGeneralize.hs:
+  hash: 198efd74ee9bb476f1443ab4b79bff85df441fe79669360cc4d0706222ec93db
+  size: 555
+  modtime: 1571719458
+/Users/hb/latlib/Learner2/package.yaml:
+  hash: 619d6b6f0e575422e6d3042ec0f67fbb729e5ce162aaf01184ba054f78c3eaf6
+  size: 1224
+  modtime: 1573279672
+/Users/hb/latlib/Learner2/src/ConsolidateAnyOfGeneralize.hs:
+  hash: 70b9ebec543f33443129a30ed8b32f3245e0e54774e1d42fc0b1c38f3228787c
+  size: 1394
+  modtime: 1571719458
+/Users/hb/latlib/Learner2/src/Schema.hs:
+  hash: 579a4ff2e6f92354082cc98d37809c4d86e775ef17138da6878edbd8011917c1
+  size: 10902
+  modtime: 1572823253
+/Users/hb/latlib/Learner2/src/ForwardRefs.hs:
+  hash: e1720af23a59a1092a839b2d4c908993a34e3792a9a1dde8f73591e51c76b90d
+  size: 1915
+  modtime: 1571719458

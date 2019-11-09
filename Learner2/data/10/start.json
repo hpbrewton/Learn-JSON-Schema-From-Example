@@ -1,0 +1,13 @@
+{
+    "dirname": "rut",
+    "files": [
+        {
+            "dirname": "users",
+            "files": [
+                {"filename": "dmr"},
+                {"filename": "ken"}
+            ]
+        },
+        {"filename": "info"}
+    ]
+}
