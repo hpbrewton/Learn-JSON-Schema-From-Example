@@ -39,7 +39,7 @@ recall example n schema = do
 
 main :: IO ()
 main = do 
-    let teacher = PathTeacher "data" 14
+    let teacher = PathTeacher "data" 1
     tStart <- start teacher
     let schema = schemaFromValue tStart 
     tOracle <- oracle teacher
