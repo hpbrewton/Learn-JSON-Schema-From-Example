@@ -19,10 +19,11 @@ terminal prefix = DefinitionSchema ref . HM.singleton ref
         ref = prefix <> sep <> "T"
 
 flatten :: Text -> Schema -> Schema 
-flatten prefix (SchemaWithOracle schema oracle) = DefinitionSchema t $ HM.insert t (SchemaWithOracle (m HM.! t) oracle) m
+flatten prefix (SchemaWithOracle schema oracle) = DefinitionSchema t $ HM.insert t (SchemaWithOracle (m `Util.errorLookup` t) oracle) m
     where 
         DefinitionSchema t m = flatten prefix schema
 flatten prefix StringSchema = terminal prefix StringSchema
+flatten prefix (SingStringSchema a) = terminal prefix (SingStringSchema a)
 flatten prefix BooleanSchema = terminal prefix BooleanSchema
 flatten prefix NullSchema = terminal prefix NullSchema
 flatten prefix (NumberSchema a b) = terminal prefix (NumberSchema a b)

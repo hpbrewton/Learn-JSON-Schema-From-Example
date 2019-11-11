@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 40aaa12dc125d246fb71c9c433fe09cb9fd16400f642a8f6ba661b63b640fec9
+-- hash: 74abcc24f25f4710feea6ef38e8f38944e10bc4d71aedd2e5f95e44956d10e4c
 
 name:           learnJSON
 version:        0.1.0.0
@@ -29,6 +29,7 @@ executable autlearn
       FullGeneralizer
       Generalizer
       IndependentLearner
+      InLanguage
       MainDriver
       OracleWrapperGeneralize
       Recursive
@@ -39,12 +40,58 @@ executable autlearn
       Schema
       Server
       SimplifyNumbers
+      Teacher
       TupleGeneralize
       Util
       Paths_learnJSON
   hs-source-dirs:
       src
   ghc-options: -threaded -rtsopts -with-rtsopts=-N -main-is AutLearn
+  build-depends:
+      QuickCheck >=2.13.2
+    , aeson >=1.4.5.0
+    , base >=4.7 && <5
+    , bytestring >=0.10.8.2
+    , containers >=0.6.0.1
+    , http-types >=0.12.3
+    , lens >=4.17.1
+    , scientific >=0.3.6.2
+    , text >=1.2.3.1
+    , time >=1.8.0.2
+    , unordered-containers >=0.2.10.0
+    , vector >=0.12.0.3
+    , wai >=3.2.2.1
+    , warp >=3.2.28
+    , wreq >=0.5.3.2
+  default-language: Haskell2010
+
+executable inlang
+  main-is: InLanguage.hs
+  other-modules:
+      AutLearn
+      ConsolidateAnyOfGeneralize
+      Flatten
+      ForwardRefs
+      FullGeneralizer
+      Generalizer
+      IndependentLearner
+      MainDriver
+      OracleWrapperGeneralize
+      Recursive
+      RefGeneralize
+      RemoveAnyOfGeneralize
+      SameObject
+      ScalarGeneralize
+      Schema
+      Server
+      SimplifyNumbers
+      Teacher
+      TupleGeneralize
+      Util
+      Paths_learnJSON
+  hs-source-dirs:
+      src
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -main-is InLanguage
   build-depends:
       QuickCheck >=2.13.2
     , aeson >=1.4.5.0
@@ -73,6 +120,7 @@ executable mainDriver
       FullGeneralizer
       Generalizer
       IndependentLearner
+      InLanguage
       OracleWrapperGeneralize
       Recursive
       RefGeneralize
@@ -82,6 +130,7 @@ executable mainDriver
       Schema
       Server
       SimplifyNumbers
+      Teacher
       TupleGeneralize
       Util
       Paths_learnJSON
@@ -115,6 +164,7 @@ executable schemaGen
       ForwardRefs
       Generalizer
       IndependentLearner
+      InLanguage
       MainDriver
       OracleWrapperGeneralize
       Recursive
@@ -125,6 +175,7 @@ executable schemaGen
       Schema
       Server
       SimplifyNumbers
+      Teacher
       TupleGeneralize
       Util
       Paths_learnJSON
@@ -159,6 +210,7 @@ executable server
       FullGeneralizer
       Generalizer
       IndependentLearner
+      InLanguage
       MainDriver
       OracleWrapperGeneralize
       Recursive
@@ -168,6 +220,7 @@ executable server
       ScalarGeneralize
       Schema
       SimplifyNumbers
+      Teacher
       TupleGeneralize
       Util
       Paths_learnJSON

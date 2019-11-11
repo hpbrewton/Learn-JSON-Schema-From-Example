@@ -30,7 +30,7 @@ type Oracle = Value -> IO Bool
 type Definitions = HM.HashMap Text Schema
 
 data Schema = StringSchema -- to be replace with regular expresion
-    | SingStringSchema String 
+    | SingStringSchema Text 
     | BooleanSchema -- a stub 
     | NullSchema -- a stub
     | NumberSchema (Maybe Scientific) (Maybe Scientific) -- min max 
@@ -44,6 +44,7 @@ data Schema = StringSchema -- to be replace with regular expresion
     | Any 
 
 instance Show Schema where 
+    show (SingStringSchema string) = printf "<%s>" (show string)
     show StringSchema = "StringSchema"
     show BooleanSchema = "BooleanSchema"
     show NullSchema = "NullSchema"
@@ -62,7 +63,7 @@ type RootSchema = (HM.HashMap Text Schema)
 schemaFromValue :: Value -> Schema
 schemaFromValue Null = NullSchema
 schemaFromValue (Bool _) = BooleanSchema
-schemaFromValue (String _) = StringSchema
+schemaFromValue (String string) = SingStringSchema string
 schemaFromValue (Number n) = NumberSchema (Just n) (Just n)
 schemaFromValue (Object obj) = ObjectSchema (HM.map schemaFromValue obj) (HS.fromList $ HM.keys obj)
 schemaFromValue (Array vec) = TupleSchema $ Vec.map schemaFromValue vec
@@ -93,24 +94,34 @@ rootLevel (Object obj) = (DefinitionSchema "." definitionsWithTop)
 schemaFromDefinition :: Value -> Schema
 schemaFromDefinition Null = NullSchema
 schemaFromDefinition (Object obj) = case HM.lookup "type" obj of 
-    Just "string" -> StringSchema
+    Just "string" -> case HM.lookup "enum" obj of 
+        Just (Array vs) -> if (1 == Vec.length vs) 
+            then case (Vec.head vs) of 
+                String v -> SingStringSchema v 
+                otherwise -> (error "this should have been a string")
+            else (error "don't know how to handle non-unit enum... ermm... um... yet")
+        Nothing -> StringSchema
+    Just "null" -> NullSchema
     Just "boolean" -> BooleanSchema
     Just "number" ->  NumberSchema (fmap toNumber (HM.lookup "minimum" obj)) (fmap toNumber (HM.lookup "maximum" obj))
     Just "array" -> case HM.lookup "items" obj of 
-        (Just v) -> ArraySchema (schemaFromDefinition v) (fromJust $ toInt (HM.lookupDefault (Number 0) "minlen" obj)) (join $ fmap toInt (HM.lookup "maximum" obj)) 
-        Nothing -> ArraySchema Any (fromJust $ toInt (HM.lookupDefault (Number 0) "minlen" obj)) (join $ fmap toInt (HM.lookup "minimum" obj))  
+        (Just v) -> ArraySchema (schemaFromDefinition v) (fromJust $ toInt (HM.lookupDefault (Number 0) "minItems" obj)) (join $ fmap toInt (HM.lookup "maxItems" obj)) 
+        Nothing -> ArraySchema Any (fromJust $ toInt (HM.lookupDefault (Number 0) "minItems" obj)) (join $ fmap toInt (HM.lookup "maxItems" obj))  
     Just "object" -> case (HM.lookup "properties" obj, HM.lookup "required" obj) of 
         (Nothing, Nothing) -> ObjectSchema HM.empty HS.empty
         (Just (Object properties), Nothing) -> ObjectSchema (HM.map schemaFromDefinition properties) HS.empty 
         (Nothing, Just (Array vector)) -> ObjectSchema HM.empty $ HS.fromList $ Vec.toList $ Vec.map (\(String txt) -> txt) vector
         (Just (Object properties), Just (Array vector)) -> ObjectSchema (HM.map schemaFromDefinition properties) (HS.fromList $ Vec.toList  $ Vec.map (\(String txt) -> txt) vector)
         _ -> error "ill formed schema"
+    Just (Array tuple) -> TupleSchema $ fmap schemaFromDefinition tuple
     Nothing -> case HM.lookup "$ref" obj of 
         Just (String ref) -> RefSchema ref 
         Just _ -> error "ill formed ref"
         Nothing -> case HM.lookup "anyOf" obj of 
             Just (Array examples) -> AnyOf $ Vec.toList $ fmap schemaFromDefinition examples
-            Nothing -> error "had a problem"
+            Nothing -> case HM.lookup "oneOf" obj of 
+                Just (Array examples) -> AnyOf $ Vec.toList $ fmap schemaFromDefinition examples
+                Nothing -> error "we had had a problem"
     Just v -> error $ show v
     where 
         toInt :: Value -> Maybe Int 
@@ -134,6 +145,7 @@ order n = \(SchemaWithOracle sch1 orc1) (SchemaWithOracle sch2 orc2) -> do
         (False, False) -> return $ Nothing 
 
 member :: Schema -> Value -> Bool
+member (SingStringSchema a) (String b) = a == b
 member StringSchema (String _) = True 
 member BooleanSchema (Bool _) = True
 member NullSchema Null = True 
@@ -164,6 +176,7 @@ member Any _ = True
 member schema value = False
 
 arbitraryFromSchema :: Schema -> Gen.Gen Value
+arbitraryFromSchema (SingStringSchema str) = return $ String str 
 arbitraryFromSchema StringSchema = return $ String "??"
 arbitraryFromSchema (BooleanSchema) = do 
     bool <- Gen.elements [True, False]
@@ -205,8 +218,9 @@ getFromDefinitionMap :: Schema -> Text -> Schema
 getFromDefinitionMap (DefinitionSchema _ m) = getWithDefinitionMap
     where 
         getWithDefinitionMap :: Text -> Schema 
-        getWithDefinitionMap = continuer . (\schema -> case schema of (SchemaWithOracle subSchema _) -> subSchema ; _ -> schema) . (m HM.!)
+        getWithDefinitionMap = continuer . (\schema -> case schema of (SchemaWithOracle subSchema _) -> subSchema ; _ -> schema) . (m `errorLookup`)
             where 
+                continuer (SingStringSchema str) = (SingStringSchema str)
                 continuer StringSchema = StringSchema 
                 continuer BooleanSchema = BooleanSchema
                 continuer NullSchema = NullSchema

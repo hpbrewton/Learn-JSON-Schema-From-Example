@@ -1,0 +1,11 @@
+{
+  "name": "jsfuzz",
+  "version": "1.0.0",
+  "description": "",
+  "main": "jsfuzz.js",
+  "scripts": {
+    "build": "node jsfuzz.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

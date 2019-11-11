@@ -1,0 +1,15 @@
+{
+    "$ref": "#/definitions/directory",
+    "definitions": {
+        "directory": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "pattern": "haha?"
+                }
+            },
+            "required": ["name"]
+        }
+    }
+}

@@ -13,11 +13,13 @@ import Data.Aeson
 import Control.Monad
 import Util
 
+import Debug.Trace
+
 infiniteObject :: Schema -> Schema
 infiniteObject (DefinitionSchema t m) = getSchema m (RefSchema t)
 
 getSchema :: HM.HashMap Text Schema -> Schema -> Schema
-getSchema m (RefSchema schema) = getSchema m (m HM.! schema) 
+getSchema m (RefSchema schema) = getSchema m (m `Util.errorLookup` schema) 
 getSchema m (SchemaWithOracle schema _) = getSchema m schema
 getSchema m (ArraySchema schema lb ub) = ArraySchema (getSchema m schema) lb ub 
 getSchema m (TupleSchema schemas) = TupleSchema $ (fmap (getSchema m)) schemas
@@ -26,7 +28,7 @@ getSchema m (AnyOf schemas) = AnyOf (fmap (getSchema m) schemas)
 getSchema m other = other
 
 getOracle :: HM.HashMap Text Schema -> Text -> (Value -> IO Bool)
-getOracle m t = (\(SchemaWithOracle _ o) -> o) (m HM.! t)
+getOracle m t = (\(SchemaWithOracle _ o) -> o) (m `Util.errorLookup` t)
 
 contains :: (Value -> IO Bool)  -> Schema -> IO Bool 
 contains o s = do 
@@ -36,6 +38,7 @@ contains o s = do
 updateRefs :: (Text -> Text) -> Schema -> Schema
 updateRefs f (DefinitionSchema t m) = DefinitionSchema (f t) $ HM.map (updateRefs f) m
 updateRefs f (SchemaWithOracle s o) = SchemaWithOracle (updateRefs f s) o 
+updateRefs f (SingStringSchema s) = (SingStringSchema s)
 updateRefs f StringSchema = StringSchema
 updateRefs f BooleanSchema = BooleanSchema 
 updateRefs f NullSchema = NullSchema
@@ -49,11 +52,13 @@ updateRefs f (RefSchema ref) = RefSchema (f ref)
 adjacency :: Schema -> IO Schema
 adjacency (DefinitionSchema t m) = do 
     fPairs <- filterM (\(b, l) -> (getOracle m b) `contains` (getSchema m (RefSchema l))) pairs
-    let preEdges = (HM.!) $ Prelude.foldr lister HM.empty fPairs
-    let postEdges = (HM.!) $ Prelude.foldr lister HM.empty $ fmap swap fPairs
+    selfSim <- filterM (\(b, l) -> fmap not ((getOracle m b) `contains` (getSchema m (RefSchema l)))) [(a, a) | a <- HM.keys m]
+    -- traceIO $ show selfSim
+    let preEdges = Util.errorLookup $ Prelude.foldr lister HM.empty fPairs
+    let postEdges = Util.errorLookup $ Prelude.foldr lister HM.empty $ fmap swap fPairs
     let bisim a b = ((preEdges a) == (preEdges b)) && ((postEdges a) == (postEdges b))
     let classes = Prelude.zip (fmap showT [1..]) $ equivalenceClass bisim (HM.keys m) 
-    let updater = (HM.!) $ HM.fromList [(r, r') | (r', rs) <- classes, r <- rs]
+    let updater = Util.errorLookup $ HM.fromList [(r, r') | (r', rs) <- classes, r <- rs]
     let switches = HM.map (AnyOf . fmap RefSchema) $ HM.fromList classes
     let (DefinitionSchema t' olds) = updateRefs updater $ DefinitionSchema t m
     let switchesPushed = HM.map (pushRefs olds) switches
@@ -68,6 +73,7 @@ adjacency (DefinitionSchema t m) = do
 
         pushRefs defs (DefinitionSchema t m) = DefinitionSchema t $ HM.map (pushRefs defs) m
         pushRefs defs (SchemaWithOracle s o) = SchemaWithOracle (pushRefs defs s) o 
+        pushRefs defs (SingStringSchema s) = (SingStringSchema s)
         pushRefs defs StringSchema = StringSchema
         pushRefs defs BooleanSchema = BooleanSchema 
         pushRefs defs NullSchema = NullSchema
@@ -76,7 +82,7 @@ adjacency (DefinitionSchema t m) = do
         pushRefs defs (AnyOf as) = AnyOf (fmap (pushRefs defs) as)
         pushRefs defs (TupleSchema as) = TupleSchema (fmap (pushRefs defs) as)
         pushRefs defs (ObjectSchema object req) = ObjectSchema (fmap (pushRefs defs) object) req 
-        pushRefs defs (RefSchema ref) = defs HM.! ref
+        pushRefs defs (RefSchema ref) = defs `Util.errorLookup` ref
 
 
 

@@ -14,7 +14,8 @@ module Util (
     lowerBound,
     swap,
     showT,
-    evens
+    evens,
+    errorLookup
     )
     where 
 
@@ -89,7 +90,7 @@ instance Ranger Int where
     averge a b = (a+b) `quot` 2 
     epsilon = 1
     upperBound = 10 
-    lowerBound = 0
+    lowerBound = -1
 
 range :: (Ranger a) => (a, a) -> (a, a) -> (a -> IO Bool) -> IO (a, a)
 range (lb, rb) (ls, rs) o
@@ -121,3 +122,8 @@ showT = T.pack . show
 
 evens :: [a] -> [a]
 evens = map snd . filter ((==1) . fst) . zip (cycle [1, 2])
+
+errorLookup :: HM.HashMap T.Text b -> T.Text -> b 
+errorLookup m t = case HM.lookup t m of 
+    Just v -> v 
+    Nothing -> error ("could not find" <> (show t))
