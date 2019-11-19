@@ -1,0 +1,28 @@
+{
+  "name": "jsserver",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node test/algos.js",
+    "ganon": "node --experimental-modules algos.js",
+    "build": "babel javascript-algorithms/src -d javascript-algorithms/build",
+    "test": "tap --coverage-report=json-summary",
+    "cover": "node test/run_test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "http-server": "^0.11.1",
+    "json-schema-faker": "^0.5.0-rc23"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.2",
+    "@babel/node": "^7.7.0",
+    "babel-cli": "^7.7.2",
+    "tap": "^14.9.2"
+  }
+}

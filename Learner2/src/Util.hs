@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Util (
     orElse,
     slotterVec,
@@ -15,7 +16,12 @@ module Util (
     swap,
     showT,
     evens,
-    errorLookup
+    errorLookup,
+    subseteq,
+    supseteq,
+    fixed,
+    ex, 
+    ex2
     )
     where 
 
@@ -127,3 +133,20 @@ errorLookup :: HM.HashMap T.Text b -> T.Text -> b
 errorLookup m t = case HM.lookup t m of 
     Just v -> v 
     Nothing -> error ("could not find" <> (show t))
+
+supseteq :: HS.HashSet T.Text -> HS.HashSet T.Text -> Bool
+supseteq xs = foldr (\v -> (&& HS.member v xs)) True 
+
+subseteq :: HS.HashSet T.Text -> HS.HashSet T.Text -> Bool
+subseteq = flip supseteq
+
+fixed :: (Eq a) => (a -> a) -> a -> a 
+fixed f a 
+    | a == f a = a 
+    | otherwise = fixed f (f a)
+
+ex :: HS.HashSet T.Text 
+ex = HS.fromList ["h", "a", "d"]
+
+ex2 :: HS.HashSet T.Text 
+ex2 = HS.fromList ["h", "a"]

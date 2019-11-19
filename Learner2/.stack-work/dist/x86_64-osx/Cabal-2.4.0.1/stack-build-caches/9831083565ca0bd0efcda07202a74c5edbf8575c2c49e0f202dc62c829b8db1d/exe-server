@@ -1,0 +1,48 @@
+/Users/hb/latlib/Learner2/src/Teacher.hs:
+  hash: 5498e7122511990a8b603eb974dc226502f7e335b9a1f92829795ff609edc34a
+  size: 1761
+  modtime: 1573439089
+/Users/hb/latlib/Learner2/src/Recursive.hs:
+  hash: a1fe79937f232fcfbda84bab0d5924e44e4c2671726be7911cf28869ed461c34
+  size: 4268
+  modtime: 1573437626
+/Users/hb/latlib/Learner2/src/IndependentLearner.hs:
+  hash: 0b7f1a3bbe6174f61b3605b90b49159538e9e1b0bb882f4bc0da68927aee6b14
+  size: 3344
+  modtime: 1573437621
+/Users/hb/latlib/Learner2/src/Server.hs:
+  hash: 97a636de728959678b96816ca92a6f8900a5e1d1b4f566c80f15b3194d22755a
+  size: 2005
+  modtime: 1573437641
+/Users/hb/latlib/Learner2/src/MainDriver.hs:
+  hash: cebf1dff9993c97d1566a3abe1eee81014393b6478478ef0b4031ecd8c88fb00
+  size: 1363
+  modtime: 1573439323
+/Users/hb/latlib/Learner2/src/Flatten.hs:
+  hash: 8e3920d129b74be080dd359f6b1f7cde652bbc7e7305ab78349bd72149f622cd
+  size: 2339
+  modtime: 1573437614
+/Users/hb/latlib/Learner2/src/PathTeacher.hs:
+  hash: 779469ab6921c0ab27b3a6fb57e2c75ee6f8633767f7d8706bd4ef3a82bdf798
+  size: 1280
+  modtime: 1573438759
+/Users/hb/latlib/Learner2/src/Util.hs:
+  hash: 745f41befdd21b01f768615e2ae859448d538f7e3635839d5adcd12bc037f228
+  size: 3789
+  modtime: 1573437672
+/Users/hb/latlib/Learner2/learnJSON.cabal:
+  hash: ea4211aa0821a58c86ea0f233362d1509fa4802ec0e0df5a1692e5a50875f0d7
+  size: 2828
+  modtime: 1573438727
+/Users/hb/latlib/Learner2/package.yaml:
+  hash: 847b005e532544963bc66f910a9fa8cd8db61ab16997f8d5006639f989bdbc72
+  size: 1061
+  modtime: 1573438549
+/Users/hb/latlib/Learner2/src/InLanguage.hs:
+  hash: 403d6e456d027846cd0858c19e248e403be40c894615e67a5ceabc5704b48a65
+  size: 423
+  modtime: 1573437624
+/Users/hb/latlib/Learner2/src/Schema.hs:
+  hash: 69a59255b1e9c87fadd03bbbbeb0ec2590a195eb16f7a1d04ebcbcf6825bd75a
+  size: 11825
+  modtime: 1573437845

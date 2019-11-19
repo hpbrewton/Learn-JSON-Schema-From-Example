@@ -1,0 +1,60 @@
+[
+    {
+        "path": "../javascript-algorithms/build/algorithms/math/fibonacci/fibonacciNthClosedForm.js",
+        "description": "Fibonacci Nth Closed Form",
+        "start": 5,
+        "looseSchema": {
+            "type": "number"
+        }
+    },
+    {
+        "path": "../javascript-algorithms/src/algorithms/math/is-power-of-two/isPowerOfTwo.js",
+        "description": "Is Power of Two?",
+        "start": 5,
+        "looseSchema": {
+            "type": "number"
+        }
+    },
+    {
+        "path": "./djikstra.js",
+        "description": "Djikstra's Algorithm",
+        "start": [{
+                "topo": [
+                    ["a", "b", 1],
+                    ["b", "c", 2],
+                    ["c", "c", 3]
+                ],
+                "directed": false
+            },
+            "a"
+        ],
+        "adapters": [
+            "graph"
+        ],
+        "looseSchema": {
+            "type": "array",
+            "items": [{
+                "type": "object",
+                "properties": {
+                    "topo": {
+                        "type": "array",
+                        "items": {
+                            "type": "array",
+                            "items": [
+                                {"type": "string"},
+                                {"type": "string"},
+                                {"type": "number"}
+                            ]
+                        }
+                    },
+                    "isDirected": {
+                        "type": "boolean"
+                    }
+                },
+                "required": ["topo", "isDirected"]
+            },{
+                "type": "string"
+            }]
+        }
+    }
+]

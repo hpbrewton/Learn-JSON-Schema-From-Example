@@ -25,7 +25,9 @@ independentLearner NullSchema oracle =
     return (SchemaWithOracle NullSchema oracle)
 independentLearner (NumberSchema a b) oracle = do
     (a', b') <- range (lowerBound, upperBound) (orElse a lowerBound, orElse b upperBound) (oracle . Number)
-    return (SchemaWithOracle (NumberSchema (Just a') (Just b')) oracle)
+    let ma = if (a' - epsilon < lowerBound) then Nothing else Just a' 
+    let mb = if (b' + epsilon > upperBound) then Nothing else Just b'
+    return (SchemaWithOracle (NumberSchema ma mb) oracle)
 independentLearner (TupleSchema schemas) oracle = do
     (Array example) <- Gen.generate $ arbitraryFromSchema $ TupleSchema schemas
     -- first we learn about the children
@@ -48,7 +50,7 @@ independentLearner (TupleSchema schemas) oracle = do
             let listSizeOracle = \n -> oracle $ Array $ Vec.fromList $ take n $ repeat $ Vec.head example
             (lb, ub) <- range (lowerBound, upperBound) (length schemas, length schemas) listSizeOracle
             -- return (SchemaWithOracle (TupleSchema newSchemas) oracle)
-            let mub = if (ub == upperBound) then Nothing else (Just ub)
+            let mub = if (ub == upperBound - 1) then Nothing else (Just ub)
             return $ SchemaWithOracle (ArraySchema (AnyOf $ Vec.toList $ newSchemas) lb mub) oracle
             -- return $ SchemaWithOracle (ArraySchema (SchemaWithOracle (AnyOf $ Vec.toList $ newSchemas) (\v -> oracle $ Array $ (v `Vec.cons` Vec.tail example))) lb $ Just ub) oracle
         else return (SchemaWithOracle (TupleSchema newSchemas) oracle)

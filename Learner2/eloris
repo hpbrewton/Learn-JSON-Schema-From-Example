@@ -1,0 +1,19 @@
+<p>Hi Loris,</p>
+<p>Just a quick update, I got the JavaScript Function to Learner shim all set up and running. Here is an example so we’re on the same page:</p>
+<p>We have some function (adapted from r.w. function) that can behave as an oracle by mapping an error thrown to false and an error not thrown to true:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">function</span>(numbers)<span class="op">{</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">    <span class="kw">var</span> average <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">    <span class="kw">var</span> total <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">    <span class="cf">for</span> (<span class="kw">var</span> i <span class="op">=</span> <span class="dv">0</span> <span class="op">;</span> i <span class="op">&lt;</span> <span class="va">numbers</span>.<span class="at">length</span><span class="op">;</span> i<span class="op">++</span>)<span class="op">{</span>    </a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">        total <span class="op">+=</span> numbers[i]<span class="op">;</span>   <span class="co">//add the each number in the array to the cumulative total </span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">    <span class="op">}</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">    average <span class="op">=</span> total/i<span class="op">;</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">    <span class="cf">if</span> (<span class="at">isNaN</span>(average)) <span class="op">{</span></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">        <span class="cf">throw</span> <span class="st">&quot;ahh!&quot;</span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">    <span class="op">}</span></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="op">}</span></a></code></pre></div>
+<p>The tool learns the following schema:</p>
+<pre><code>Definitions &quot;2&quot; fromList [(&quot;1&quot;,AnyOf [~NumberSchema Nothing Nothing]),(&quot;2&quot;,AnyOf [~ArraySchema (AnyOf [RefSchema &quot;1&quot;]) 1 Nothing])]</code></pre>
+<p>With unit percision and recall.</p>
+<p>Tomorrow I am going to just try to find a whole bunch of examples and work on sec. 5.</p>
+<p>Best, Harrison</p>

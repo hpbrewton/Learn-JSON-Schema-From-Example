@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 55c4e3740e455e6d32c0cf27ee26a9a9e3d48dcf142b1095680738035a00347f
+-- hash: 1ef899281926ac5aa8eeb0e904ce9b448e748444ecca2151a63cb8ebb804a975
 
 name:           learnJSON
 version:        0.1.0.0
@@ -20,21 +20,24 @@ source-repository head
   type: git
   location: https://github.com/githubuser/tiling
 
-executable inlang
-  main-is: InLanguage.hs
+executable jsFuzzer
+  main-is: JSFuzzer.hs
   other-modules:
+      ErrorTeacher
       Flatten
       IndependentLearner
       MainDriver
+      PathTeacher
       Recursive
       Schema
       Server
+      ServerTeacher
       Teacher
       Util
       Paths_learnJSON
   hs-source-dirs:
       src
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N -main-is InLanguage
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -main-is JSFuzzer
   build-depends:
       QuickCheck >=2.13.2
     , aeson >=1.4.5.0
@@ -43,6 +46,7 @@ executable inlang
     , containers >=0.6.0.1
     , http-types >=0.12.3
     , lens >=4.17.1
+    , process >=1.6.5.0
     , scientific >=0.3.6.2
     , text >=1.2.3.1
     , time >=1.8.0.2
@@ -56,12 +60,15 @@ executable inlang
 executable mainDriver
   main-is: MainDriver.hs
   other-modules:
+      ErrorTeacher
       Flatten
       IndependentLearner
-      InLanguage
+      JSFuzzer
+      PathTeacher
       Recursive
       Schema
       Server
+      ServerTeacher
       Teacher
       Util
       Paths_learnJSON
@@ -76,6 +83,7 @@ executable mainDriver
     , containers >=0.6.0.1
     , http-types >=0.12.3
     , lens >=4.17.1
+    , process >=1.6.5.0
     , scientific >=0.3.6.2
     , text >=1.2.3.1
     , time >=1.8.0.2
@@ -89,12 +97,15 @@ executable mainDriver
 executable server
   main-is: Server.hs
   other-modules:
+      ErrorTeacher
       Flatten
       IndependentLearner
-      InLanguage
+      JSFuzzer
       MainDriver
+      PathTeacher
       Recursive
       Schema
+      ServerTeacher
       Teacher
       Util
       Paths_learnJSON
@@ -109,6 +120,7 @@ executable server
     , containers >=0.6.0.1
     , http-types >=0.12.3
     , lens >=4.17.1
+    , process >=1.6.5.0
     , scientific >=0.3.6.2
     , text >=1.2.3.1
     , time >=1.8.0.2

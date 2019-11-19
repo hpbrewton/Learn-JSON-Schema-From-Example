@@ -88,6 +88,17 @@
   (major1) == 4 && (major2) == 17 && (minor) <= 1)
 #endif /* MIN_VERSION_lens */
 
+/* package process-1.6.5.0 */
+#ifndef VERSION_process
+#define VERSION_process "1.6.5.0"
+#endif /* VERSION_process */
+#ifndef MIN_VERSION_process
+#define MIN_VERSION_process(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  6 || \
+  (major1) == 1 && (major2) == 6 && (minor) <= 5)
+#endif /* MIN_VERSION_process */
+
 /* package scientific-0.3.6.2 */
 #ifndef VERSION_scientific
 #define VERSION_scientific "0.3.6.2"
@@ -254,7 +265,7 @@
 #endif /* MIN_TOOL_VERSION_runghc */
 
 #ifndef CURRENT_COMPONENT_ID
-#define CURRENT_COMPONENT_ID "learnJSON-0.1.0.0-AllcOuPKeObBalimqgK0qB-server"
+#define CURRENT_COMPONENT_ID "learnJSON-0.1.0.0-AfZr6s8TT2GDY4SVjneUQi-server"
 #endif /* CURRENT_COMPONENT_ID */
 #ifndef CURRENT_PACKAGE_VERSION
 #define CURRENT_PACKAGE_VERSION "0.1.0.0"

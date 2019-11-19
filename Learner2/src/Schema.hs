@@ -43,6 +43,23 @@ data Schema = StringSchema -- to be replace with regular expresion
     | SchemaWithOracle Schema Oracle  -- not available as a producable oracle, but used as an internal step
     | Any 
 
+instance Eq Schema where
+    (==) StringSchema StringSchema = True
+    (==) (SingStringSchema a) (SingStringSchema b) = a == b 
+    (==) BooleanSchema BooleanSchema = True
+    (==) NullSchema NullSchema = True 
+    (==) (NumberSchema a b) (NumberSchema c d) = (a == c) && (b == d)
+    (==) (ArraySchema s a b) (ArraySchema t c d) = (s == t) && (a == c) && (b == d)
+    (==) (TupleSchema a) (TupleSchema b) = a == b 
+    (==) (ObjectSchema v a) (ObjectSchema w b) = (v == w ) && (a == b)
+    (==) (RefSchema a) (RefSchema b) = a == b 
+    (==) (AnyOf a) (AnyOf b) = a == b 
+    (==) (DefinitionSchema t d) (DefinitionSchema t2 d2) = (t == t2) && (d == d2)
+    (==) (SchemaWithOracle s _) (SchemaWithOracle s1 _) = s == s1 
+    (==) Any Any = True 
+    (==) _ _ = False 
+
+ 
 instance Show Schema where 
     show (SingStringSchema string) = printf "<%s>" (show string)
     show StringSchema = "StringSchema"

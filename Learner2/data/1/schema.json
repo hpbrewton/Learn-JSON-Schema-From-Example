@@ -7,11 +7,14 @@
                 "h": {
                     "type": "boolean"
                 },
+                "i": {
+                    "type": "boolean"
+                },
                 "g": {
                     "$ref": "#/definitions/example"
                 }
             },
-            "required": ["h"]
+            "required": ["h", "i"]
         }
     }
 }

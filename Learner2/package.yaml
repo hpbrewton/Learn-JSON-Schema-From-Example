@@ -22,6 +22,7 @@ dependencies:
 - lens >= 4.17.1
 - wreq >= 0.5.3.2
 - time >= 1.8.0.2
+- process >= 1.6.5.0
 
 executables:
   server:
@@ -40,12 +41,13 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     - -main-is MainDriver
-  inlang:
-    main: InLanguage.hs
+  jsFuzzer:
+    main: JSFuzzer.hs
     source-dirs: src
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
-    - -main-is InLanguage
+    - -main-is JSFuzzer
+    
 

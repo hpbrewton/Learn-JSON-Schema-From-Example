@@ -30,7 +30,7 @@ version = Version [0,1,0,0] []
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
 
 bindir     = "/Users/hb/latlib/Learner2/.stack-work/install/x86_64-osx/9831083565ca0bd0efcda07202a74c5edbf8575c2c49e0f202dc62c829b8db1d/8.6.5/bin"
-libdir     = "/Users/hb/latlib/Learner2/.stack-work/install/x86_64-osx/9831083565ca0bd0efcda07202a74c5edbf8575c2c49e0f202dc62c829b8db1d/8.6.5/lib/x86_64-osx-ghc-8.6.5/learnJSON-0.1.0.0-AllcOuPKeObBalimqgK0qB-server"
+libdir     = "/Users/hb/latlib/Learner2/.stack-work/install/x86_64-osx/9831083565ca0bd0efcda07202a74c5edbf8575c2c49e0f202dc62c829b8db1d/8.6.5/lib/x86_64-osx-ghc-8.6.5/learnJSON-0.1.0.0-AfZr6s8TT2GDY4SVjneUQi-server"
 dynlibdir  = "/Users/hb/latlib/Learner2/.stack-work/install/x86_64-osx/9831083565ca0bd0efcda07202a74c5edbf8575c2c49e0f202dc62c829b8db1d/8.6.5/lib/x86_64-osx-ghc-8.6.5"
 datadir    = "/Users/hb/latlib/Learner2/.stack-work/install/x86_64-osx/9831083565ca0bd0efcda07202a74c5edbf8575c2c49e0f202dc62c829b8db1d/8.6.5/share/x86_64-osx-ghc-8.6.5/learnJSON-0.1.0.0"
 libexecdir = "/Users/hb/latlib/Learner2/.stack-work/install/x86_64-osx/9831083565ca0bd0efcda07202a74c5edbf8575c2c49e0f202dc62c829b8db1d/8.6.5/libexec/x86_64-osx-ghc-8.6.5/learnJSON-0.1.0.0"
